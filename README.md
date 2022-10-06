@@ -32,116 +32,159 @@ Since the goal is to try to gain insights, as to how much a particular upgrade o
 price of a house, as opposed to predicting home prices, I will be placing an emphasis on choosing features with the least explanatory overlap. To that end, for instance, I would favor a feature such as a bedroom, or a bathroom over square footage.<br><br><br>
 
 **<font size='4'>The following includes dataframe information, as well as plots and histograms describing the data:</font>**<br><br>
-![image2](./images/kc_df_info.png)<br>
-**<font size='3'>Above is information about the dataframe (after 'id' column was dropped).</font>**<br><br>
-![image3](./images/features_hist.png)<br>
+![image2](./images/info_for_revised.png)<br><br>
+![image3](./images/hist_revised.png)<br>
 **<font size='3'>Above are the histograms of the distribtutions of the different features.</font>**<br><br>
-![image4](./images/ftr_price_scatter_plots.png)<br>
+![image4](./images/init_scat_plots_revised.png)<br>
 **<font size='3'>Above are scatter plots of the change of the different features, relative to the price.</font>**<br><br><br>
+![image11](./images/monotonicity_plots.png)<br>
+**<font size='3'>Above are bar plots used to visualize monotonicity in categorical features.</font>**<br><br><br>
 
 **<font size='3'>Data Understanding Take-aways So Far:</font>**<br>
-1. There appear to be six categorical variables: 
+1. There appear to be eight categorical variables: 
  - bedrooms 
  - bathrooms
  - floors
  - view
  - condition
  - grade
-<BR>
-2. There is atleast one binary variable:
  - waterfront
+ - zipcode
 <BR> 
-3. There appear to be several potential zero inflated variables:
+2. There appear to be several potential zero inflated variables:
  - sqft_lot
- - sqft_basement
- - yr_renovated
+ - waterfront
+ - view
  - sqft_lot15
 <BR>
-4. There are also several right-skewed distributions, that may be normalized by a log transformation 
+3. There are also several right-skewed distributions, that may be normalized by a log transformation:
+- sqft_lot
+- sqft_lot15
+- sqft_above
 <BR>
-5. Sqft_living appears to have the strongest correlation with price. Sqft_above and bathrooms, also 
+4. Sqft_living appears to have the strongest correlation with price. Sqft_above and bathrooms, also 
     appear to have a pretty strong linear relationship with price.
 <BR>  
-6.  Since the relationship between the ordinal variables (grade,condition, bathrooms,bedrooms) are not repectively         monotonic, some of the results given by the regression model may appear non-sensical.
+5.  Since the relationship between the ordinal variables (grade,condition, bathrooms,bedrooms) are not repectively monotonic, some of the results given by the regression model may appear non-sensical.
 <BR>
-7. The descriptive analysis, as well as the visualizations show that there are outliers. I will 
+6. The descriptive analysis, as well as the visualizations show that there are outliers. I will 
     begin by removing these.<br><br>
+
 ## Preprocessing Data
+- outliers based on the target were removed
+- right skewed continuous features were log transformed
+- some features were dropped due to missing data, zero inflated, not useful, etc.
+- categorical features wer encoded
+- features were scaled
 
-<font size='3'>In this section, I will deal with incorrect data types, as well as missing , or 'zero-inflated' data. I will also create the categorical 'dummy' columns , as well as perform transformations on continuous data if necessary. I also created two 'preprocessed' dataframes, one that is scaled, and one that is not. Once I have all my final features, I will create another model with the identical set of features that are not scaled. It makes for an easier interpretation of the individual variables.</font>**<br>
+## Baseline Model
+![image12](./images/baseline_model_revised.png)<br>
+baseline_model_revised.png
 
-**<font size='3'>The following is a description of the scaled dataframe after the preprocessing was completed:</font>**<br>
-![image5](./images/preprocess_cmplt_info.png)<br><br><br>
 
 ## Feature Selection
-<font size='3'>In this section I created the following three baseline models:</font><br>
-<font size='3'>1. The feature with the highest correlation to the dependent variable (price)</font><br>
-<font size='3'>2. The dataframe with all the features, as well as 'dummy' features, log transormations</font><br>
-<font size='3'>3. In this dataframe I have dropped some 'generalized' features with high explanatory overlap.</font><br><br>
-<font size='3'>Continuing with the third baseline model, I repeatedly remove features with p-values over.05, and features with high multi-colinearity. The following is the final model before I begin to confirm the assumptions of linear regression. At this point there are actually two models, that are identical except one has the 'lat' feature and one does not. This is because at this point I am not sure if I should remove the 'lat' feature in order to lower the Jarque Bera score.</font><br>
-
-**<font size='3'>Model with 'lat' feature:</font>**<br>
-![image6](./images/model_w_lat.png)<br><br><br>
-
-**<font size='3'>Model without 'lat' feature:</font>**<br>
-![image7](./images/model_no_lat.png)<br><br><br>
-
-## Assumptions of Multiple Linear Regression
-**<font size='3'>In this section I had to remove some rows in order to satisfy the assumptions of homoscedasticity, and normality of the residuals. This is the final model after all the assumptions were satisfied:</font>**<br>
-![image8](./images/final_model_scaled.png)<br><br><br>
+<font size='3'>- I created 13 models.</font><br>
+<font size='3'>- For each I was either removing features with high p-values, or removing features or rows in an attempt to satisfy the assumptions of linear regression.</font><br>
+<font size='3'>- The threshold for removing a feature was a p-value greater than or equal to .05.</font><br>
+<font size='3'>- I also removed features that had correlation with other features that were greater than 0.75 .</font><br><br>
 
 
-## Renovation and Remodel Recommendations
+# Renovation and Remodel Recommendations
 
 **<font size='3'>Baseline model:</font>**<br>
 **<font size='3'>'const': 1</font>**<br>
 **<font size='3'>'lat': 47.56</font>**<br>
-**<font size='3'>'view': 'AVERAGE' (default)</font>**<br>
-**<font size='3'>'condition': 'AVERAGE' (default)</font>**<br>
-**<font size='3'>'grade': '10 Very Good' (default)</font>**<br>
-**<font size='3'>'waterfront': 'NO' (default)</font>**<br>
 **<font size='3'>'bedrooms': 1 (default)</font>**<br>
 **<font size='3'>'bathrooms': 0.5 (default)</font>**<br>
 **<font size='3'>'floors': 1 (default)</font>**<br>
 **<font size='3'>'log_sqft_lot': 9</font>**<br>
-**<font size='3'>'price' : 12.855537576059533 aprox.: 382903.231151</font>**<br><br><br><br>
+**<font size='3'>'price' : 13.113682471133828  aprox.: $495678.33</font>**<br><br><br><br>
 
 
-## 1. Adding a Second Floor:
-**<font size='3'>The following is the price predicted by the model when the baseline model is changed from 1 floor, to 2 floors. The result is the power to which Euler's number (e) should be raised, in order to derive the price:</font>**<br>
-![image9](./images/pred_second_floor.png)<br><br>
-**<font size='3'>In this case, we have a log-level regression, where the dependent variable 'price', is log transformed, and the independent variable 'flr__2.0'  is not. It takes the following form:</font>**<br>
-**<font size='3'>ln y = b0 + b1(x) + E</font>**<br>
-**<font size='3'>where b0 is the constant, b1 is the slope coefficient, and E is the error term.</font>**<br>
-**<font size='3'>We can calculate the change in price, based on the change in x with the following formula:</font>**<br>
-**<font size='3'>%(change in y) = 100 * ((e^b1) - 1)</font>**<br>
-**<font size='3'>Based on this formula, with b1 = 0.0864, the change in y would be equal to 9.02423%. If we multiply 382,903.231151 by 1.0902423, we get 417,457.299407. If we compare 
-this to the price predicted by the model in terms of an exponent,e^12.941941308413988 = 417458.872072. The log-level interpretation matches the predicted value with a precision of   99.99962328%.</font>**<br><br><br><br>
+## 1. Upgrade to Three Bathrooms:
+After upgrading to 3 bathrooms the log_price is : 13.184882922583839
+In this case, we have a log-level regression, where the dependent variable 'price', is log transformed, and the independent variable 'bthrm__3.0' is not. It takes the following form:
+
+ln y = b0 + b1(x) + E
+
+where b0 is the constant, b1 is the slope coefficient, and E is the error term.
+
+
+We can calculate the change in price, based on the change in x with the following formula:
+
+                        %(change in y) = 100 * ((e^b1) - 1)
+                        %(change in y) = 100 * ((e^0.071003) - 1)
+                        %(change in y) = 100 * ((1.0735844) - 1)
+                        %(change in y) = 7.35844%
+where: b1 = 0.071003
+
+If we compare the e^log price value to the one where we multiply the baseline house price by multiplying by its change percentage wise, we get:
+
+                        e ^ 13.184882922583839 = 495776.25 * 1.0735844
+                                    $532257.63 = $532257.65
+There is a difference of only two pennies, which may have been caused in part because I rounded the percentage value.
+
+Note: When dealing with categorical values, this log-level formula works only when comparing the prices to the default (dropped) values.
+br><br><br><br>
+
+
+## 2. Upgrade to Two and a Half Floors:
+After upgrading to 2.5 floors, the log_price is: 13.382565260322977
+In this case, we have a log-level regression, where the dependent variable 'price', is log transformed, and the independent variable 'flr__2.5' is not. It takes the following form:
+
+ln y = b0 + b1(x) + E
+
+where b0 is the constant, b1 is the slope coefficient, and E is the error term.
+
+
+We can calculate the change in price, based on the change in x with the following formula:
+
+                        %(change in y) = 100 * ((e^b1) - 1)
+                        %(change in y) = 100 * ((e^0.197682) - 1)
+                        %(change in y) = 100 * ((1.2185748) - 1)
+                        %(change in y) = 21.85748%
+where: with b1 = 0.197682
+
+If we compare the e^log price value to the one where we multiply the baseline house price by multiplying by its change percentage wise, we get:
+
+                        e ^ 13.382565260322977 = 532257.63 * 1.2185748
+                                    $648595.97 = $648595.74
+There is a difference of only twentythree cents, which may have been caused in part because I rounded the percentage value.
+
+Note: When dealing with categorical values, this log-level formula works only when comparing the prices to the default (dropped) values.
+<br><br><br>
 
 
 
-## 2. Upgrading Building Grade to 'grd_11 Excellent':
-**<font size='3'>The following is the price predicted by the model when the baseline model is changed from grade 10 to grade 11. The result is the power to which Euler's number (e) should be raised, in order to derive the price:</font>**<br>
-![image10](./images/pred_grd_11.png)<br><br>
-**<font size='3'>In this case, we have a log-level regression, where the dependent variable 'price', is log transformed, and the independent variable 'grd_11 Excellent'  is not. It takes the following form:</font>**<br>
-**<font size='3'>ln y = b0 + b1(x) + E</font>**<br>
-**<font size='3'>where b0 is the constant, b1 is the slope coefficient, and E is the error term.</font>**<br>
-**<font size='3'>We can calculate the change in price, based on the change in x with the following formula:</font>**<br>
-**<font size='3'>%(change in y) = 100 * ((e^b1) - 1)</font>**<br>
-**<font size='3'>Based on this formula, with b1 = 0.5802, the change in y would be equal to 78.639567%. If we multiply 382,903.231151 by 1.78639567, we get 684,016.674157. If we compare this to the price predicted by the model in terms of an exponent, e^13.43576963632787 = 684,038.60586. The log-level interpretation matches the predicted value with a precision of 99.996793791%.</font>**<br><br><br><br>
+
+## 3. Increasing Living Space to 2500 Square Feet::
+After upgrading to 2.5 floors, the log_price is: 13.5359042176324
+In this case, we have a log-log regression, where the dependent variable 'price', is log transformed, and the independent variable 'log_sqft_living' is log transformed as well. It takes the following form:
+
+ln y = b0 + b1(x) + E
+
+where b0 is the constant, b1 is the slope coefficient, and E is the error term.
 
 
+We can calculate the change in price, based on the change in x with the following formula:
 
-## 3. Upgrading to Four Bedrooms:
-**<font size='3'>The following is the price predicted by the model when the baseline model is changed from 1 bedroom to 4 bedrooms. The result is the power to which Euler's number (e) should be raised, in order to derive the price:</font>**<br>
-![image11](./images/pred_bdrm_4.png)<br><br>
-**<font size='3'>In this case, we have a log-level regression, where the dependent variable 'price', is log transformed, and the independent variable 'bdrm__4' is not. It takes the following form:</font>**<br>
-**<font size='3'>ln y = b0 + b1(x) + E</font>**<br>
-**<font size='3'>where b0 is the constant, b1 is the slope coefficient, and E is the error term.</font>**<br>
-**<font size='3'>We can calculate the change in price, based on the change in x with the following formula:</font>**<br>
-**<font size='3'>%(change in y) = 100 * ((e^b1) - 1)</font>**<br>
-**<font size='3'>Based on this formula, with b1 =  0.0758, the change in y would be equal to 7.87468%. If we multiply 382,903.231151 by 1.0787468, we get 413,055.635314. If we compare this to the price predicted by the model in terms of an exponent, e^12.931293218903669 = 413,037.31498. The log-level interpretation matches the predicted value with a precision of   99.995564681%.</font>**<br><br><br><br>
+                        %(change in y) = b1 * %(change in x)
+                        %(change in y) = (100 * ((new_x - x) / x) * b1)%
+                        %(change in y) = (100 * ((2499.88497551 - 1881.83002516) / 1881.83002516) * b1)%
+                        %(change in y) = (100 * ((618.05495035) / 1881.83002516) * b1)%
+                        %(change in y) = (100 * 0.32843293075 * 0.539926)%
+                        %(change in y) = 17.7329478568%
+where: b1 = 0.539926
+x = current log_sqft_living = (e ^ 7.54) = 1881.83002516
+new_x = new log_sqft_living = (e ^ 7.824) = 2499.88497551
 
+
+If we compare the e^log price value to the one where we multiply the baseline house price by multiplying by its change percentage wise, we get:
+
+                        e ^ 13.5359042176324 = 648595.97 * 1.177329478568
+                                    $756081.32 = $763611.16
+This gives us a difference of less than 1%, which may have been caused in part due to rounding of certain numbers.
+<br><br><br><br>
 
 
 ## Project Conclusion: Main Take-aways
