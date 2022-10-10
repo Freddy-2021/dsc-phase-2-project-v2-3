@@ -1,6 +1,6 @@
 ![image1](./images/house_for_sale.png)
 
-
+# Using a Linear Regression Model to Predict Home Prices Based on Changes Made to the Home
 **Author**: Freddy Abrahamson
 
 ## Overview
